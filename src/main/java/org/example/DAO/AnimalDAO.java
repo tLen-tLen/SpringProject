@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 
 @Component
@@ -20,17 +21,28 @@ public class AnimalDAO {
     public void setTemplate(JdbcTemplate template) {
         this.template = template;
     }
+
     public int insert(Animal a){
-        String sql= "INSERT INTO Animal(name,age) values('" +a.getName() + "', '"+a.getAge()+"')";
-        return template.update(sql);
+        String sql= "INSERT INTO Animal(name,age) values(?,?)";
+        Object[] params = {a.getName(), a.getAge() };
+        int[] types = {Types.VARCHAR, Types.INTEGER};
+        int rows = template.update(sql,params,types);
+        return rows;
     }
     public int update(Animal a){
-        String sql="UPDATE Animal SET name='"+a.getName()+"', age='" +a.getAge()+ "' WHERE id="+a.getId() + "";
-        return template.update(sql);
+        String sql="UPDATE Animal SET name=?, age=? WHERE id=?";
+        Object[] params = {a.getName(), a.getAge(), a.getId() };
+        int[] types = {Types.VARCHAR, Types.INTEGER, Types.INTEGER};
+        int rows = template.update(sql,params,types);
+        return rows;
     }
+
     public int delete(int id){
-        String sql="DELETE FROM Animal WHERE id=" + id + "";
-        return template.update(sql);
+        String sql="DELETE FROM Animal WHERE id=?";
+        Object[] params = { id };
+        int[] types = {Types.INTEGER};
+        int rows = template.update(sql, params, types);
+        return rows;
     }
     public Animal getById(int id){
         String sql="SELECT * FROM Animal WHERE id=?";
